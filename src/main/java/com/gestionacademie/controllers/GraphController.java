@@ -44,6 +44,7 @@ public class GraphController {
             return "graphsEtatMajor";
         }else {
             System.out.println("bataillon dans else : "+bataillon);
+            model.addAttribute("bataillon",bataillon);
             List<MilitaireCountByBataillonDTO> militaireCounts2 = militaireService.getMilitaireCountByBMCAAndBataillon(bataillon);
             model.addAttribute("militaireCounts2", militaireCounts2);
             List<MilitaireGradeCountDTO> gradeCategoryData = militaireService.getMilitaireCountByGradeCategoryAndBataillon(bataillon);

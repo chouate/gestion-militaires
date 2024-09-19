@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Dynamic Graphs</title>
+    <title> Graphes</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Icons"rel="stylesheet">
     <style>
@@ -153,22 +153,22 @@
             label: bmca,
             data: bataillonLabels.map(bataillon => dataByBataillon[bataillon][bmca]),
             backgroundColor: {
-                'Moto': 'rgba(22,49,225,0.6)',
-                'VL': 'rgba(255, 99, 132, 0.6)',
-                'PL': 'rgba(255, 206, 86, 0.6)',
-                'TC': 'rgba(75, 192, 192, 0.6)',
-                'SR': 'rgba(153, 102, 255, 0.6)',
-                ' ' : 'rgb(213,24,24)'
-            }[bmca],
-            borderColor: {
-                'Moto': 'rgb(9,9,9)',
+                'Moto': 'rgba(22,49,225,1)',
                 'VL': 'rgba(255, 99, 132, 1)',
                 'PL': 'rgba(255, 206, 86, 1)',
                 'TC': 'rgba(75, 192, 192, 1)',
                 'SR': 'rgba(153, 102, 255, 1)',
-                ' ' : 'rgb(213,24,24)'
+                ' ' : 'rgb(255,255,255)'
             }[bmca],
-            borderWidth: 2
+            borderColor: {
+                'Moto': 'rgba(22,49,225,1)',
+                'VL': 'rgba(255, 99, 132, 1)',
+                'PL': 'rgba(255, 206, 86, 1)',
+                'TC': 'rgba(75, 192, 192, 1)',
+                'SR': 'rgba(153, 102, 255, 1)',
+                ' ' : 'rgba(22,144,225,1)'
+            }[bmca],
+            borderWidth: 1
         }));
 
         // Créer le graphique
@@ -203,7 +203,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Nombre'
+                            text: 'Nombre de Militaires'
                         }
                     }
                 }
@@ -250,14 +250,14 @@
             label: grade,
             data: gradeBataillonLabels.map(bataillon => dataByGradeBataillon[bataillon][grade]),
             backgroundColor: {
-                'Officier': 'rgba(11,41,236,0.6)',
-                'ODR': 'rgba(224,83,11,0.93)',
-                'MDR': 'rgba(32,35,37,0.53)'
+                'Officier': 'rgb(238,5,41)',
+                'ODR': 'rgba(82,224,11,0.93)',
+                'MDR': 'rgb(16,146,232)'
             }[grade],
             borderColor: {
-                'Officier': 'rgba(11,41,236,0.6)',
-                'ODR': 'rgba(224,83,11,0.93)',
-                'MDR': 'rgba(32,35,37,0.53)'
+                'Officier': 'rgb(238,5,41)',
+                'ODR': 'rgba(82,224,11,0.93)',
+                'MDR': 'rgb(16,146,232)'
             }[grade],
             borderWidth: 2
         }));
@@ -294,7 +294,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Nombre'
+                            text: 'Nombre de Militaires'
                         }
                     }
                 }
@@ -339,14 +339,14 @@
             label: grade,
             data: situationFamilialeLabels.map(situation => dataBySituationFamiliale[situation][grade]),
             backgroundColor: {
-                'Officier': 'rgba(11,41,236,0.6)',
-                'ODR': 'rgba(224,83,11,0.93)',
-                'MDR': 'rgba(32,35,37,0.53)'
+                'Officier': 'rgb(238,5,41)',
+                'ODR': 'rgba(82,224,11,0.93)',
+                'MDR': 'rgb(16,146,232)'
             }[grade],
             borderColor: {
-                'Officier': 'rgba(11,41,236,0.6)',
-                'ODR': 'rgba(224,83,11,0.93)',
-                'MDR': 'rgba(32,35,37,0.53)'
+                'Officier': 'rgb(238,5,41)',
+                'ODR': 'rgba(82,224,11,0.93)',
+                'MDR': 'rgb(16,146,232)'
             }[grade],
             borderWidth: 1
         }));
@@ -428,14 +428,14 @@
             label: grade,
             data: ageGroupLabels.map(ageGroup => dataByAgeGroup[ageGroup][grade]),
             backgroundColor: {
-                'Officier': 'rgba(54, 162, 235, 0.6)',
-                'ODR': 'rgba(255, 159, 64, 0.6)',
-                'MDR': 'rgba(75, 192, 192, 0.6)'
+                'Officier': 'rgb(238,5,41)',
+                'ODR': 'rgba(82,224,11,0.93)',
+                'MDR': 'rgb(16,146,232)'
             }[grade],
             borderColor: {
-                'Officier': 'rgba(54, 162, 235, 1)',
-                'ODR': 'rgba(255, 159, 64, 1)',
-                'MDR': 'rgba(75, 192, 192, 1)'
+                'Officier': 'rgb(238,5,41)',
+                'ODR': 'rgba(82,224,11,0.93)',
+                'MDR': 'rgb(16,146,232)'
             }[grade],
             borderWidth: 1
         }));
@@ -493,12 +493,21 @@
 
         // Predefined colors for the datasets
         const colors = [
-            '#FF6384', // Color 1
+            'rgb(82,243,0)', // Color 1
             '#36A2EB', // Color 2
-            '#FFCE56', // Color 3
-            '#4BC0C0', // Color 4
-            '#FF9F40', // Color 5
-            '#C9CBCF'  // Color 6
+            '#f50202', // Color 3
+            'rgba(11,236,210,0.41)', // Color 4
+            '#fff540', // Color 5
+            '#C9CBCF',  // Color 6
+            '#0025f6', // Color 7
+            '#594949', // Color 8
+            'rgb(248,179,59)', // Color 9
+            'rgba(119,241,149,0.93)', // Color 10
+            'rgb(253,210,234)', // Color 11
+            '#f107fd',  // Color 12
+            'rgb(38,159,38)', // Color 13
+            'rgba(131,30,97,0.66)', // Color 14
+            '#f58505', // Color 15
         ];
 
         // Construction des labels pour les diplômes et des datasets
