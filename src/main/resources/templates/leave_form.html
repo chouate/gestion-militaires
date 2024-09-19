@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Leave Form</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #f7f7f7;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+        }
+        .btn-secondary{
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Informations du congé</h2>
+    <form th:action="@{/militaires/{id}/fiche-conge(id=${militaire.id})}" method="post">
+        <div class="form-group">
+            <label for="valableDe">Valable de:</label>
+            <input type="date" class="form-control" id="valableDe" name="valableDe" required>
+        </div>
+        <div class="form-group">
+            <label for="valableA">À:</label>
+            <input type="date" class="form-control" id="valableA" name="valableA" required>
+        </div>
+        <div class="form-group">
+            <label for="seRendreDe">Pour se rendre de:</label>
+            <input type="text" class="form-control" id="seRendreDe" name="seRendreDe" value="Nador"required>
+        </div>
+        <div class="form-group">
+            <label for="seRendreA">À:</label>
+            <input type="text" class="form-control" id="seRendreA" name="seRendreA" required>
+        </div>
+        <div class="form-group text-right">
+            <a style="color: white" onclick="window.history.back()" class="btn btn-secondary">Annuler</a>
+            <button type="submit" class="btn btn-primary">Valider</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

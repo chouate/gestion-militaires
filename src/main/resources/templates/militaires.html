@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Militaires</title>
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons"rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+
+        .material-icons {
+            /*vertical-align: middle;*/
+        }
+
+        .imprimer-fiche-identite, .imprimer-fiche-stage, .edit, .delete {
+            color: #555;
+            margin-right: 0px;
+            margin: 0px;
+            padding: 0px;
+            text-decoration: none;
+        }
+
+        .delete  {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #c93939;
+        }
+        .edit{
+            color: #dad55e;
+        }
+        .actions{
+
+            padding: 0;
+            margin: 0;
+            text-align: end;
+            max-width: 140px;
+            /*
+            display: flex;
+            justify-content: flex-end;
+             */
+        }
+        body{
+            line-height: 1.3;
+        }
+        .btn-search {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .input-group .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        thead{
+            font-weight: bold;
+        }
+
+        tbody td{
+            padding: 0px;
+        }
+
+        /* CSS */
+        .button-64 {
+            align-items: center;
+            background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB);
+            border: 0;
+            border-radius: 8px;
+            box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+            box-sizing: border-box;
+            color: #FFFFFF;
+            display: flex;
+            font-family: Phantomsans, sans-serif;
+            font-size: 30px;
+            justify-content: center;
+            line-height: 1em;
+            max-width: 100%;
+            min-width: 140px;
+            padding: 2px;
+            text-decoration: none;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .button-64:active,
+        .button-64:hover {
+            outline: 0;
+        }
+
+        .button-64 span {
+            background-color: rgb(5, 6, 45);
+            padding: 12px 24px;
+            border-radius: 6px;
+            width: 100%;
+            height: 100%;
+            transition: 300ms;
+        }
+
+        .button-64:hover span {
+            background: none;
+        }
+
+        @media (min-width: 768px) {
+            .button-64 {
+                font-size: 20px;
+                min-width: 196px;
+            }
+        }
+
+        .table-title .xp-searchbar {
+            width: 100%; /* S'assure que la barre de recherche utilise toute la largeur disponible de la colonne */
+            max-width: 400px; /* Limite la largeur maximale de la barre de recherche pour éviter qu'elle ne soit trop large */
+        }
+
+        .table-title .btn {
+            margin-left: 10px; /* Espacement constant entre les boutons */
+        }
+
+
+        .navbar-nav .home-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: black;
+            color: white;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            padding: 0;
+            border: white solid 2px;
+
+        }
+
+        .navbar-nav .home-button:hover {
+            background-color: #0003b3;
+            color: white;
+            border: white solid 2px;
+        }
+        .profile-image {
+            width: 50px; /* Ajustez la taille selon vos besoins */
+            height: 50px; /* Assurez-vous que la hauteur est égale à la largeur pour un cercle parfait */
+            border-radius: 50%; /* Cette propriété transforme l'image en cercle */
+            object-fit: cover; /* Cela garantit que l'image couvre tout le cercle sans distorsion */
+            border: 2px solid #ddd; /* Optionnel : Ajoute une bordure autour de l'image */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Optionnel : Ajoute une ombre pour un effet visuel */
+        }
+
+        .logout{
+            width: 45px;
+            height: 45px;
+            display: flex;align-items: center;justify-content: center;
+            border-radius: 8px;
+        }
+
+        .flex-right {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .custom-right-align {
+            text-align: right; /* Aligner le texte à droite */
+            font-weight: bold; /* Rendre le texte en gras si nécessaire */
+            font-size: 18px; /* Ajuster la taille du texte selon vos préférences */
+            margin-right: 10px; /* Ajouter un petit espace à droite si nécessaire */
+            color: #333; /* Couleur du texte */
+            text-transform: uppercase; /* Convertir le texte en majuscules */
+        }
+
+        .nav-pills {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap; /* Empêche le retour à la ligne des éléments */
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding-left: 0;
+            list-style: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="top-navbar">
+    <div class="xd-topbar">
+        <div class="row">
+            <!-- Colonne pour le bouton et la barre de recherche -->
+            <div style="padding-left: 0" class="col-md-10 col-lg-8 d-flex align-items-center">
+                <!-- Bouton "Afficher les Graphes" -->
+                <a style="color: white;" class="button-64 mr-2" role="button" th:href="@{/graphs(bataillon = ${bataillon} )}">
+                    <span class="text">Afficher les Graphes</span>
+                </a>
+
+                <!-- Barre de recherche -->
+                <div class="xp-searchbar">
+                    <form>
+                        <div class="input-group">
+                            <input style="width: 340px; max-width: 100%;" type="search" class="form-control" placeholder="Rechercher un nom ou un matricule" id="searchInput">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary btn-search" type="button" id="searchButton">
+                                    <i class="material-icons">search</i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Colonne pour la barre de profil -->
+            <div style="padding-right: 0" class="col-10 col-md-6 col-lg-4 d-flex justify-content-end">
+                <div class="xp-profilebar text-right">
+                    <nav class="navbar p-0">
+                        <ul class="nav navbar-nav flex-row ml-auto">
+                            <!-- Bouton Home -->
+                            <li style="padding: 0px;align-items: center;align-content: center;" class="nav-link  mr-2">
+                                <a class=" home-button" href="/" title="Home">
+                                    <i class="material-icons">home</i>
+                                </a>
+                            </li>
+                            <li  class="nav-link  mr-3 ">
+                                <a class="logout btn btn-danger ml-2 d-flex align-items-center" title="Déconnexion">
+                                   <!--<i class="material-icons">exit_to_app</i>-->
+                                    <i class="fas fa-power-off"></i>
+                                    <!--<span style="font-size: 18px;">Déconnexion</span>-->
+                                </a>
+                            </li>
+
+                            <!--
+                            <li class="dropdown nav-item">
+                                <a class="nav-link" href="#" data-toggle="dropdown">
+                                    <img src="img/user.png" style="width:40px; border-radius:50%; background-color: white;" />
+                                    <span class="xp-user-live"></span>
+                                </a>
+                                <ul class="dropdown-menu small-menu">
+                                    <li>
+                                        <a href="#">
+                                            <span class="material-icons">person_outline</span>
+                                            Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <span class="material-icons">settings</span>
+                                            Settings
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <form th:action="@{/logout}" method="post">
+                                            <button type="submit" th:onclick="'return confirm(\'Voulez-vous vraiment vous déconnecter ?\')'">
+                                                <span class="material-icons">logout</span>
+                                                logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                            -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="col-md-12">
+        <div class="table-wrapper">
+
+            <div class="table-title">
+                <div class="row align-items-center">
+                    <!-- Colonne pour le titre -->
+                    <div class="col-sm-6 p-0 flex justify-content-lg-start justify-content-center">
+                        <h2 class="ml-lg-2 mb-0">Liste Militaires <span th:text="' ('+${totalMilitaires}+')'"></span></h2>
+                    </div>
+                    <div  th:if="${bataillon=='B.C.S'}" class="d-flex justify-content-end align-items-center flex-right">
+                        <p class="flex-right">B.C.S </p>
+                    </div>
+
+                    <div th:if="${bataillon=='1B.L.I.R'}" class="col-sm-6 p-0 flex justify-content-lg-end ">
+                        <h2 class="ml-lg-2 mb-0">1B.L.I.R </h2>
+                    </div>
+                    <div th:if="${bataillon=='2B.L.I.R'}" class="col-sm-6 p-0 flex justify-content-lg-end justify-content-center">
+                        <h2 class="ml-lg-2 mb-0">2B.L.I.R </h2>
+                    </div>
+                    <div th:if="${bataillon=='B.H.M'}" class="col-sm-6 p-0 flex justify-content-lg-end justify-content-center">
+                        <h2 class="ml-lg-2 mb-0">B.H.M </h2>
+                    </div>
+                    <!-- Colonne pour les boutons -->
+                    <div th:if="${bataillon == null}" class="col-sm-6 p-0 flex justify-content-lg-end justify-content-center">
+                        <a th:href="@{/militaires/new(page=${currentPage})}" class="btn btn-success">
+                            <i class="material-icons">&#xE147;</i>
+                            <span>Add New Militaire</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <table class="table table-striped table-hover">
+                <thead >
+                <tr>
+                    <!--
+                    <th><span class="custom-checkbox"/>
+                        <input type="checkbox" id="selectAll">
+                        <label for="selectAll"></label>
+                    </th>-->
+                    <th>Photo</th>
+                    <th>Nom & Prénom</th>
+                    <th>
+                        <!--<input type="text" id="matriculeSearchInput" placeholder="Chercher par matricule" class="form-control" style="margin-top: 5px; " oninput="validateMatriculeInput(event)">-->
+                        Matricule
+                    </th>
+                    <th>Grade</th>
+                    <th>Unité</th>
+                    <th>Diplome</th>
+                    <th>Fonction</th>
+                    <th>Date Naisssance</th>
+                    <th>Age</th>
+                    <th>Situation familiale</th>
+                    <th>BMCA</th>
+                    <th>P.T.C</th>
+                    <th>L.D</th>
+                    <th>Téléphone</th>
+                    <th>Adresse</th>
+                    <th style="width: auto">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody id="militaireTableBody">
+                    <tr th:each="militaire : ${militaires}" >
+                        <!--
+                        <th><span class="custom-checkbox"/>
+                            <input type="checkbox" id="checkbox1" name="option[]" value="1">
+                            <label for="checkbox1"></label>
+                        </th>
+                        -->
+                        <th>
+                            <!--
+                            <img th:src="${militaire.image != null ? '/images/' + militaire.id : '/img/user.png'}"
+                                 alt="Photo de militaire"
+                                 class="profile-image"
+                            >
+                            <img th:if="${militaire.imagePath != null}" th:src="@{${militaire.imagePath}}"
+                                 alt="Photo de militaire"
+                                 class="profile-image"
+                            >
+                            <img th:if="${militaire.imagePath == null}" src="/img/user.png"
+                                 alt="Photo de militaire"
+                                 class="profile-image"
+                            >-->
+                            <img th:src="${militaire.imagePath != null ? '/uploads/' + militaire.imagePath  : '/img/user.png'}"
+                                 alt="Photo de militaire"
+                                 class="profile-image">
+
+                        </th>
+
+
+                        <td th:text="${militaire.nom +' '+ militaire.prenom}"></td>
+                        <td th:text="${militaire.matricule}"></td>
+                        <td th:text="${militaire.grade.nom} "></td>
+                        <td th:text="${militaire.bataillon.nom} "></td>
+                        <td th:text="${militaire.diplome}"></td>
+                        <td th:text="${militaire.fonction}"></td>
+                        <td th:text="${militaire.dateNaissance}"></td>
+                        <td th:text="${militaire.getAge()}"></td>
+                        <td th:text="${militaire.situationFamiliale}"></td>
+                        <td th:text="${militaire.BMCA}"></td>
+                        <td th:text="${militaire.PTC}"></td>
+                        <td th:text="${militaire.LD}"></td>
+                        <td th:text="${militaire.telephone}"></td>
+                        <td th:text="${militaire.adresse}"></td>
+                        <td class="actions">
+                            <a th:if="${bataillon == null || #strings.isEmpty(bataillon) }" style="color: #ef8308;" class="edit" th:href="@{/militaires/edit/{id}(id=${militaire.id},page=${currentPage})}">
+                                <i class="material-icons" data-toggle="tooltip" title="Modifier">&#xE254;</i>
+                            </a>
+                            <form th:if="${bataillon == null || #strings.isEmpty(bataillon) }" th:action="@{/militaires/delete/{id}(id=${militaire.id})}" onclick="return confirm('Êtes-vous sûr de supprimer ?')" method="post" style="display:inline;">
+                                <input type="hidden" name="_method" value="delete"/>
+                                <button style="border: none" type="submit" class="delete">
+                                    <i class="material-icons" data-toggle="tooltip" title="Supprimer">&#xE872;</i>
+                                </button>
+                            </form>
+                            <a class="imprimer-fiche-identite" th:href="@{/militaires/print/{id}(id=${militaire.id})}" data-toggle="tooltip" title="Imprimer Fiche Renseignement">
+                                <i class="material-icons">print</i>
+                            </a>
+                            <a class="imprimer-fiche-stage" th:href="@{/militaires/{id}/fiche-conge/form(id=${militaire.id})}" data-toggle="tooltip" title="Imprimer Fiche Congé">
+                                <i class="material-icons">assignment</i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between">
+                <div id="paginationHintText" class="hint-text">showing <b th:text="${currentPage}"></b> out of <b id="totalPages" th:text="${totalPages}"></b></div>
+                <ul id="pagination" class=" nav nav-pills " >
+                    <li  th:each="page,status:${pages}">
+                        <a style="margin: 1px;" th:class="${status.index==currentPage?'btn btn-info ms-1':'btn btn-outline-info ms-1' }"
+                           th:text="${status.index}"
+                           th:href="@{militaires(bataillon=${bataillon},page=${status.index})}"
+                        ></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <!--récupérer la propriété bataillon dans le DOM afin de l'utiliser dans la foction javascript-->
+    <input type="hidden" id="bataillonHidden"  th:value="${bataillon}">
+
+
+
+<script>
+        function confirmDeletion(militaireId) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ce militaire ?")) {
+                document.getElementById('delete-form-' + militaireId).submit();
+            }
+        }
+        /*document.getElementById('searchInput').addEventListener('keyup', function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#militaireTableBody tr');
+
+            rows.forEach(row => {
+                const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                if (name.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });*/
+
+        document.getElementById('searchInput').addEventListener('keyup', function () {
+            const filter = this.value.toLowerCase();
+            const bataillon = document.getElementById('bataillonHidden').value;
+            console.log("Bataillon:", bataillon);
+            const url = `/militaires?search=${encodeURIComponent(filter)}&bataillon=${encodeURIComponent(bataillon)}`;
+
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newTableBody = doc.querySelector('#militaireTableBody').innerHTML;
+                    document.querySelector('#militaireTableBody').innerHTML = newTableBody;
+
+                    // Cache le texte de pagination pendant une recherche
+                    const pagination = document.querySelector('.nav.nav-pills');
+                    const paginationHintText = document.getElementById('paginationHintText');
+                    // Récupérer le nombre total de pages
+                    const totalPages = doc.querySelector('#totalPages').textContent || 0;
+                    console.log("totalPages",totalPages);
+
+                    // Réinitialiser la pagination
+                    pagination.innerHTML = '';
+                    if (filter) {
+                        pagination.style.display = 'none';
+                        paginationHintText.style.display = 'none';
+                        console.log("none");
+                    } else {
+                        pagination.style.display = 'block';
+                        paginationHintText.style.display = 'block';
+                        // Optionnel : Mettre à jour la pagination si nécessaire
+                        const newPagination = doc.querySelector('.nav.nav-pills').innerHTML;
+                        document.querySelector('.nav.nav-pills').innerHTML = newPagination;
+                        // Forcer le réappliquage des classes et des styles après la mise à jour
+                        document.querySelector('.nav.nav-pills').classList.add('d-flex', 'justify-content-center', 'flex-wrap-nowrap');
+                        console.log("block");
+                    }
+
+
+                })
+                .catch(error => console.error('Error fetching filtered results:', error));
+
+        });
+
+        document.getElementById('searchButton').addEventListener('click', function () {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.dispatchEvent(new Event('keyup'));
+        });
+
+        /*
+        document.getElementById('matriculeSearchInput').addEventListener('keyup', function () {
+            const filter = this.value.toLowerCase();
+            const url = `/militaires?searchMatricule=${encodeURIComponent(filter)}`;
+
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newTableBody = doc.querySelector('#militaireTableBody').innerHTML;
+                    document.querySelector('#militaireTableBody').innerHTML = newTableBody;
+
+                    // Optionnel : Mettre à jour la pagination si nécessaire
+                    const newPagination = doc.querySelector('.nav.nav-pills').innerHTML;
+                    document.querySelector('.nav.nav-pills').innerHTML = newPagination;
+                })
+                .catch(error => console.error('Error fetching filtered results:', error));
+        });
+
+        document.getElementById('matriculeSearchButton').addEventListener('click', function () {
+            const matriculeSearchInput = document.getElementById('matriculeSearchInput');
+            matriculeSearchInput.dispatchEvent(new Event('keyup'));
+        });
+        */
+        function validateMatriculeInput(event) {
+            const input = event.target;
+            input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+        }
+
+
+
+    </script>
+
+</body>
+</html>

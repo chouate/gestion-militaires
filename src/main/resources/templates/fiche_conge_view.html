@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Fiche de Congé</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .card-container {
+            width: 210mm;
+            height: 297mm;
+            padding: 20mm;
+            padding-top: 0;
+            margin: auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+        .logo1, .logo2 {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /*margin-right: 40px;*/
+        }
+        .logo2{
+            align-items: center;
+        }
+        .logo1{
+            align-items: start;
+        }
+        .logo1 img {
+            height: 135px;
+            width: 110px;
+        }
+        .logo2 img {
+            height: 90px;
+            width: 70px;
+        }
+        .logo-text {
+            margin-top: 10px; /* Espacement entre l'image et le texte */
+            text-align: center; /* Centrer le texte sous l'image */
+            font-size: 20px; /* Taille du texte (ajustez selon vos besoins) */
+            color: #333; /* Couleur du texte (ajustez selon vos besoins) */
+            font-weight: bold;
+        }
+        .text {
+            flex: 2;
+            text-align: left;
+            line-height: 10px;
+            font-weight: bold;
+            padding-left: 0px;
+            max-width: 250px;
+            text-align:center;
+            align-items: end;
+            font-size:15px;
+        }
+        .paragraph-text{
+            padding-left: 0;
+            padding-right: 0;
+            align-items: end;
+            text-transform:uppercase;
+        }
+
+        .leave-form {
+            width: 600px;
+            margin: 50px auto;
+            border: 1px solid #000;
+            padding: 20px;
+            text-align: start;
+            line-height: 2;
+            font-size: 18px;
+        }
+        .leave-form span {
+            display: inline-block;
+            width: 200px; /* Set width for alignment */
+            text-align: center; /* Center text within the span */
+            border-bottom: 2px dotted #000;
+
+        }
+
+        .card-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .btn-print, .btn-cancel {
+            padding: 10px 20px;
+            background-color: #00A8FF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            border-radius: 20px;
+        }
+        .btn-print:hover {
+            background-color: #007bff;
+        }
+        .btn-cancel {
+            background-color: white;
+            text-decoration: none;
+            color: #00A8FF;
+            border: 1px solid #00A8FF;
+            width: 50px;
+        }
+        .btn-cancel:hover {
+            background-color: whitesmoke;
+        }
+        /* Hide buttons when printing */
+        @media print {
+            .btn-print, .btn-cancel {
+                display: none;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="card-container">
+    <div class="card-header">
+        <div class="logo1">
+            <img style="margin-left: 0px;" src="/img/image3.png" alt="Logo de l'Académie">
+        </div>
+
+        <div class="logo2">
+            <img src="/img/image1.jpeg" alt="Logo de l'Académie">
+            <span class="logo-text" th:text="'('+${militaire.grade.categorie}+')'"></span>
+        </div>
+        <!--<h2>Fiche de Congé <span th:text="${militaire.grade.categorie}"></span></h2>-->
+
+        <div class="text">
+            <p class="paragraph-text">Royaume du Maroc</p>
+            <p class="paragraph-text">Forces Armées Royales</p>
+            <p class="paragraph-text">secteur operationnel nord </p>
+            <p class="paragraph-text">2°regiment leger   </p>
+            <p class="paragraph-text">d'Intervention Rapide</p>
+        </div>
+    </div>
+    <div class="leave-form">
+        <p style="text-align: center;">Permission de <span th:text="${duree}"></span> (jours)</p>
+        <p>Nom et Prénom : <span th:text="${militaire.nom} + ' ' + ${militaire.prenom}"></span></p>
+        <p>Grade : <span th:text="${militaire.grade.nom}"></span></p>
+        <p>Valable du <span th:text="${valableDe}"></span> Au <span th:text="${valableA}"></span></p>
+        <p>Pour aller de <span th:text="${seRendreDe}"></span> a <span th:text="${seRendreA}"></span></p>
+        <p>A <span th:text="${seRendreDe}"></span> , Le <span th:text="${localDate}"></span></p>
+    </div>
+    <div class="card-footer">
+        <a onclick="window.history.back()" class="btn-cancel">Annuler</a>
+        <button class="btn-print" onclick="window.print()">Imprimer</button>
+    </div>
+</div>
+
+</body>
+</html>

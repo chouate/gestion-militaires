@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Modifier Militaire</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+    <style>
+        .retour {
+            position: absolute;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: inherit;
+            z-index: 1;
+            color: #0b2e13;
+            background-color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .retour:hover{
+            background-color: #ebebeb;
+            color: #0b2e13;
+        }
+        .align-content-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+
+
+        .btn-secondary.retour i {
+            font-size: 20px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .text-danger {
+            font-size: 0.875em;
+        }
+
+        /* Conteneur principal avec centrage vertical et horizontal */
+        .photo-upload-container {
+            display: flex;
+            flex-direction: column; /* Colonne pour empiler le label et le cercle */
+            align-items: center; /* Centre les éléments horizontalement */
+            text-align: center; /* Centre le texte du label */
+        }
+
+        /* Styles pour le conteneur d'image */
+        .profile-image-container {
+
+            width: 150px; /* Taille du cercle */
+            height: 150px; /* Taille du cercle */
+            border-radius: 50%; /* Cercle parfait */
+            overflow: hidden; /* Masque l'image qui dépasse */
+            position: relative;/* Pour permettre le positionnement absolu des éléments à l'intérieur */
+            background-color: #f0f0f0; /* Couleur de fond par défaut */
+            border: 2px solid #ddd; /* Bordure légère */
+            margin-top: 10px; /* Marge au-dessus du cercle pour espacement */
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ajuste l'image pour remplir le cercle */
+            transition: opacity 0.3s ease; /* Transition douce */
+        }
+
+        .file-input-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Centre le label */
+            cursor: pointer;
+            color: #007bff; /* Couleur du bouton */
+            font-size: 24px;
+            background-color: rgba(255, 255, 255, 0.8); /* Fond légèrement transparent */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+
+        .file-input {
+            display: none; /* Masquer le champ de fichier réel */
+        }
+
+        /* Styles supplémentaires pour l'image par défaut */
+        .default-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <a th:href="@{/militaires(page=${currentPage})}" class="btn btn-secondary retour">
+                        <i class="material-icons">arrow_back_ios</i>
+                    </a>
+                    <h2 class="card-title text-center mb-4">Modifier Militaire</h2>
+                    <form method="post" th:action="@{/militaires/update/{id}(id=${militaire.id},page=${currentPage})}" th:object="${militaire}" enctype="multipart/form-data" >
+                        <!-- Zone de prévisualisation de l'image -->
+                        <div class="mb-3 photo-upload-container">
+                            <div class="photo-label">Photo</div>
+                            <div class="profile-image-container">
+                                <img id="preview" class="profile-image default-image"  th:src="${militaire.imagePath != null ? '/uploads/' + militaire.imagePath : '/img/user.png'}" alt="Prévisualisation de l'image">
+                                <label for="photo" class="file-input-label">
+                                    <i class="material-icons">add_a_photo</i>
+                                </label>
+                                <input type="file" id="photo" name="photo"  class="file-input" accept="image/*" onchange="loadImagePreview(event)">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nom" class="form-label">Nom</label>
+                            <input type="text" id="nom" th:field="*{nom}" class="form-control" placeholder="Entrez le nom">
+                            <span class="text-danger" th:errors="*{nom}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="prenom" class="form-label">Prénom</label>
+                            <input type="text" id="prenom" th:field="*{prenom}" class="form-control" placeholder="Entrez le prénom">
+                            <span class="text-danger" th:errors="*{prenom}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dateNaissance" class="form-label">Date de Naissance</label>
+                            <input type="date" id="dateNaissance" th:field="*{dateNaissance}" class="form-control">
+                            <span class="text-danger" th:errors="*{dateNaissance}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telephone" class="form-label">Téléphone</label>
+                            <input type="text" id="telephone" th:field="*{telephone}" class="form-control" placeholder="Entrez le téléphone" oninput="validateChampsInput(event)">
+                            <span class="text-danger" th:errors="*{telephone}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adresse" class="form-label">Adresse</label>
+                            <input type="text" id="adresse" th:field="*{adresse}" class="form-control" placeholder="Entrez l'adresse">
+                            <span class="text-danger" th:errors="*{adresse}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="situationFamiliale" class="form-label">Situation Familiale</label>
+                            <select id="situationFamiliale" th:field="*{situationFamiliale}" class="form-control">
+                                <option th:each="situation : ${listSituationFamiliale}" th:value="${situation}" th:text="${situation}"></option>
+                            </select>
+                            <span class="text-danger" th:if="${#fields.hasErrors('situationFamiliale')}" th:errors="*{situationFamiliale}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="matricule" class="form-label">Matricule</label>
+                            <input type="text" id="matricule" th:field="*{matricule}" class="form-control" placeholder="Entrez le matricule" >
+                            <span class="text-danger" th:errors="*{matricule}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fonction" class="form-label">Fonction</label>
+                            <input type="text" id="fonction" th:field="*{fonction}" class="form-control" placeholder="Entrez la fonction">
+                            <span class="text-danger" th:errors="*{fonction}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="grade" class="form-label">Grade</label>
+                            <select id="grade" th:field="*{grade.id}" class="form-control">
+                                <option th:each="grade : ${grades}"  th:value="${grade.id}" th:text="${grade.nom}+'   ('+${grade.categorie}+')'"></option>
+                            </select>
+                            <span class="text-danger" th:errors="*{grade.id}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="diplome" class="form-label">Diplôme</label>
+                            <select id="diplome" th:field="*{diplome}" class="form-control">
+                                <option th:if="${militaire.diplome != null}" th:value="${militaire.diplome}" th:text="${militaire.diplome}"></option>
+                            </select>
+                            </select>
+                            <span class="text-danger" th:errors="*{diplome}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="BMCA" class="form-label">BMCA</label>
+                            <select id="BMCA" th:field="*{BMCA}" class="form-control">
+                                <option th:each="bmca : ${listBMCA}" th:value="${bmca}" th:text="${bmca}"></option>
+                            </select>
+                            <span class="text-danger" th:if="${#fields.hasErrors('BMCA')}" th:errors="*{BMCA}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="LD" class="form-label">LD</label>
+                            <input type="text" id="LD" th:field="*{LD}" class="form-control" placeholder="Entrez le LD" oninput="validateChampsInput(event)">
+                            <span class="text-danger" th:errors="*{LD}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="PTC" class="form-label">PTC</label>
+                            <input type="text" id="PTC" th:field="*{PTC}" class="form-control" placeholder="Entrez le PTC" oninput="validateChampsInput(event)">
+                            <span class="text-danger" th:errors="*{PTC}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bataillon" class="form-label">Bataillon</label>
+                            <select id="bataillon" th:field="*{bataillon.id}" class="form-control">
+                                <option th:each="bataillon : ${bataillons}" th:value="${bataillon.id}" th:text="${bataillon.nom}"></option>
+                            </select>
+                            <span class="text-danger" th:errors="*{bataillon.id}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="companie" class="form-label">Companie</label>
+                            <select id="companie" th:field="*{companie.id}" class="form-control">
+                                <option th:each="companie : ${companies}" th:value="${companie.id}" th:text="${companie.nom}"></option>
+                            </select>
+                            <span class="text-danger" th:errors="*{companie.id}"></span>
+                        </div>
+                        <div class="align-content-center mt-4">
+                            <button type="submit" class="btn btn-primary">Modifier</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function validateChampsInput(event) {
+        const input = event.target;
+        // Remove any non-numeric characters
+        input.value = input.value.replace(/\D/g, '');
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const gradeSelect = document.getElementById('grade');
+        const diplomeSelect = document.getElementById('diplome');
+        const currentDiplome = diplomeSelect.value; // Get the current diploma value
+
+        const diplomeOptions = {
+            'Officier': [" ","DOCTORAT", "C.B.M", "C.E.M", "C.O.S", "C.SUP.LOG", "C.D.P", "C.D.C", "C.APP", "B.C.M"],
+            'ODR': [" ","B.C.M", "B.S", "B.E", "C.I.A"],
+            'MDR': [" ","C.I.A", "CAT 2", "CAT 1", "N.DIPLOMES"]
+        };
+
+        // Track the current category
+        let currentCategory = null;
+
+        function updateDiplomeOptions(category, currentDiplome) {
+            diplomeSelect.innerHTML = ''; // Clear current options
+
+            // Populate the new options based on the selected category
+            diplomeOptions[category].forEach(function(diplome) {
+                const option = document.createElement('option');
+                option.value = diplome;
+                option.textContent = diplome;
+                diplomeSelect.appendChild(option);
+            });
+
+            // Set the current diploma as selected if it matches one of the options
+            if (currentDiplome) {
+                diplomeSelect.value = currentDiplome;
+            }
+        }
+
+        // Initialize the current category on page load based on the current grade
+        if (gradeSelect.value) {
+            const selectedCategory = gradeSelect.options[gradeSelect.selectedIndex].textContent.match(/\(([^)]+)\)/)[1];
+            currentCategory = selectedCategory;
+
+            // Set the diploma options based on the current category
+            if (diplomeOptions[currentCategory]) {
+                updateDiplomeOptions(currentCategory, currentDiplome);
+            }
+        }
+
+        // Event listener for grade changes
+        gradeSelect.addEventListener('change', function () {
+            const selectedGrade = gradeSelect.options[gradeSelect.selectedIndex];
+            const selectedCategory = selectedGrade.textContent.match(/\(([^)]+)\)/)[1]; // Extract the category
+
+            // Check if the category has changed
+            if (selectedCategory !== currentCategory) {
+                currentCategory = selectedCategory; // Update the current category
+
+                // Update diploma options based on the new category
+                if (diplomeOptions[selectedCategory]) {
+                    updateDiplomeOptions(selectedCategory);
+                }
+            }
+        });
+    });
+
+    // Fonction pour prévisualiser l'image chargée
+    function loadImagePreview(event) {
+        const image = document.getElementById('preview');
+        image.src = URL.createObjectURL(event.target.files[0]);
+        image.style.opacity = 1; // Assurez-vous que l'image est visible
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>upload error</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <!-- Section pour afficher le message d'erreur -->
+    <div th:if="${message}" class="alert alert-danger" role="alert">
+        <span th:text="${message}"></span>
+    </div>
+</body>
+</html>

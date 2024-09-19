@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dynamic Graphs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons"rel="stylesheet">
+    <style>
+        body{
+            background-color: white;
+        }
+        .container{
+            padding: 30px;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: space-between; /* Espace égal entre les graphiques */
+            flex-wrap: wrap; /* Permet d'ajuster si l'écran est trop petit */
+            gap: 20px; /* Espacement entre les graphiques */
+            margin-bottom: 20px;
+        }
+        .chart-wrapper {
+            flex: 1;
+            min-width: 400px; /* Assurez-vous qu'ils ne deviennent pas trop petits */
+        }
+        canvas {
+            width: 100%;
+            height: 200px;
+        }
+        /*.header-container {
+            background-color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin-top: 0;
+            min-width: 400px;
+            flex: 1;
+        }*/
+        .header-container {
+            display: flex;
+            align-items: center; /* Aligne verticalement les éléments au centre */
+            justify-content: center; /* Centre les enfants horizontalement */
+            position: relative; /* Nécessaire pour positionner l'icône */
+            background-color: white;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+
+        .header-container a {
+            position: absolute;
+            left: 20px; /* Place l'icône à gauche */
+            top: 50%;
+            transform: translateY(-50%); /* Centrer verticalement l'icône */
+        }
+
+        .header-container h2 {
+            flex: 1; /* Prend l'espace disponible pour centrer le texte */
+            margin: 0;
+            text-align: center; /* Centre le texte h2 dans son espace */
+        }
+
+
+        canvas {
+            border: 2px solid #cccccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            background-color: white;
+        }
+        .retour {
+            position: absolute;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: inherit;
+            z-index: 1;
+            background-color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .retour:hover{
+            background-color: #ebebeb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <a onclick="window.history.back()" class="btn btn-secondary retour">
+                <i class="material-icons">arrow_back_ios</i>
+            </a>
+            <h2>Ensemple des graphes</h2>
+        </div>
+
+        <!-- Premier ensemble de deux graphiques -->
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="militaireChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="gradeCategoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Deuxième ensemble avec un seul graphique (ou plus, si nécessaire) -->
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="ageGroupGradeChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="familySituationChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="diplomeChart"></canvas>
+        </div>
+
+    </div>
+
+
+    <script th:inline="javascript">
+        //************************************** start chart 1 ******************************************
+        /*<![CDATA[*/
+        const militaireData = /*[[${militaireCounts}]]*/ '[]';
+        /*]]>*/
+
+        // Extraire les noms de bataillons et catégories uniques
+        //const bataillonLabels = Array.from(new Set(militaireData.map(item => item.bataillon)));
+        const bataillonLabels = ["B.C.S","1B.L.I.R","2B.L.I.R","B.H.M"]
+        //const bmcaCategories = Array.from(new Set(militaireData.map(item => item.bmca)));
+        const bmcaCategories = ["Moto", "VL", "PL", "TC", "SR"," "];
+
+        // Préparer un objet pour contenir les données par bataillon et par catégorie
+        const dataByBataillon = {};
+        bataillonLabels.forEach(bataillon => {
+            dataByBataillon[bataillon] = {};
+            bmcaCategories.forEach(bmca => {
+                dataByBataillon[bataillon][bmca] = 0; // initialiser à 0
+            });
+        });
+
+        // Remplir l'objet dataByBataillon avec les données
+        militaireData.forEach(item => {
+            dataByBataillon[item.bataillon][item.bmca] = item.count;
+        });
+
+        // Préparer les datasets pour Chart.js
+        const datasets = bmcaCategories.map(bmca => ({
+            label: bmca,
+            data: bataillonLabels.map(bataillon => dataByBataillon[bataillon][bmca]),
+            backgroundColor: {
+                'Moto': 'rgba(22,49,225,0.6)',
+                'VL': 'rgba(255, 99, 132, 0.6)',
+                'PL': 'rgba(255, 206, 86, 0.6)',
+                'TC': 'rgba(75, 192, 192, 0.6)',
+                'SR': 'rgba(153, 102, 255, 0.6)',
+                ' ' : 'rgb(213,24,24)'
+            }[bmca],
+            borderColor: {
+                'Moto': 'rgb(9,9,9)',
+                'VL': 'rgba(255, 99, 132, 1)',
+                'PL': 'rgba(255, 206, 86, 1)',
+                'TC': 'rgba(75, 192, 192, 1)',
+                'SR': 'rgba(153, 102, 255, 1)',
+                ' ' : 'rgb(213,24,24)'
+            }[bmca],
+            borderWidth: 2
+        }));
+
+        // Créer le graphique
+        const ctx = document.getElementById('militaireChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: bataillonLabels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Situation BMCA par Categorie et par Bataillon'
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        stacked: false, // Ne pas empiler les barres
+                        title: {
+                            display: true,
+                            text: 'Bataillons'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre'
+                        }
+                    }
+                }
+            }
+        });
+        //************************************** end chart 1 ******************************************
+        //**************************************start chart 2 ******************************************
+        /*<![CDATA[*/
+        const gradeCategoryData = /*[[${militaireGradeCategoryCounts}]]*/ '[]';
+        const totalMilitairesByBataillon = /*[[${totalMilitairesByBataillon}]]*/ '[]';
+
+        // Extraire les noms de bataillons et catégories de grade uniques
+        //const gradeBataillonLabels = Array.from(new Set(gradeCategoryData.map(item => item.bataillon)));
+        const gradeBataillonLabels = ["B.C.S","1B.L.I.R","2B.L.I.R","B.H.M"]
+        const gradeCategories = Array.from(new Set(gradeCategoryData.map(item => item.gradeCategory)));
+
+        // Préparer un objet pour contenir les données par bataillon et par catégorie de grade
+        const dataByGradeBataillon = {};
+        gradeBataillonLabels.forEach(bataillon => {
+            dataByGradeBataillon[bataillon] = {};
+            gradeCategories.forEach(grade => {
+                dataByGradeBataillon[bataillon][grade] = 0; // initialiser à 0
+            });
+        });
+
+        // Remplir l'objet dataByGradeBataillon avec les données
+        gradeCategoryData.forEach(item => {
+            dataByGradeBataillon[item.bataillon][item.gradeCategory] = item.count;
+        });
+        // Créer un map pour le nombre total par bataillon
+        const totalMap = new Map();
+        totalMilitairesByBataillon.forEach(item => {
+            totalMap.set(item[0], item[1]);
+        });
+
+        // Ajuster les labels des bataillons pour inclure le total
+        const adjustedBataillonLabels = gradeBataillonLabels.map(bataillon => {
+            const total = totalMap.get(bataillon) || 0;
+            return `EFFECTIFS  ${bataillon} : ${total}`; // Exemple de format: "BHM (150)"
+        });
+
+        // Préparer les datasets pour Chart.js
+        const gradeDatasets = gradeCategories.map(grade => ({
+            label: grade,
+            data: gradeBataillonLabels.map(bataillon => dataByGradeBataillon[bataillon][grade]),
+            backgroundColor: {
+                'Officier': 'rgba(11,41,236,0.6)',
+                'ODR': 'rgba(224,83,11,0.93)',
+                'MDR': 'rgba(32,35,37,0.53)'
+            }[grade],
+            borderColor: {
+                'Officier': 'rgba(11,41,236,0.6)',
+                'ODR': 'rgba(224,83,11,0.93)',
+                'MDR': 'rgba(32,35,37,0.53)'
+            }[grade],
+            borderWidth: 2
+        }));
+
+        // Créer le graphique pour les catégories de grade
+        const ctxGrade = document.getElementById('gradeCategoryChart').getContext('2d');
+        new Chart(ctxGrade, {
+            type: 'bar',
+            data: {
+                labels: adjustedBataillonLabels,
+                datasets: gradeDatasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Situation des personnels par Catégorie et Bataillon'
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        stacked: false,
+                        title: {
+                            display: true,
+                            text: 'Bataillons'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre'
+                        }
+                    }
+                }
+            }
+        });
+        /*]]>*/
+        //************************************** end chart 2 ******************************************
+        //**************************************start chart 3 ******************************************
+        /*<![CDATA[*/
+        const familySituationData = /*[[${familySituationData}]]*/ '[]';
+
+        // Récupère toutes les situations familiales et grades
+        const situationFamilialeLabels = Array.from(new Set(familySituationData.map(item => item.situationFamiliale)));
+        const gradeLabels = Array.from(new Set(familySituationData.map(item => item.grade)));
+
+        // Initialise un objet pour stocker les données par situation familiale et par grade
+        const dataBySituationFamiliale = {};
+        const totalBySituationFamiliale = {};
+
+        // Initialisation des données
+        situationFamilialeLabels.forEach(situation => {
+            dataBySituationFamiliale[situation] = {};
+            totalBySituationFamiliale[situation] = 0; // Initialise le total à 0
+            gradeLabels.forEach(grade => {
+                dataBySituationFamiliale[situation][grade] = 0; // Initialise à 0
+            });
+        });
+
+        // Remplissage des données par situation familiale et grade
+        familySituationData.forEach(item => {
+            dataBySituationFamiliale[item.situationFamiliale][item.grade] = item.count;
+            totalBySituationFamiliale[item.situationFamiliale] += item.count; // Calcul du total
+        });
+
+        // Mise à jour des labels pour inclure les totaux
+        const labelsWithTotals = situationFamilialeLabels.map(situation =>
+            `TOTAL DES ${situation} : ${totalBySituationFamiliale[situation]}`
+        );
+
+        // Préparation des datasets pour le graphique
+        const familyDatasets = gradeLabels.map(grade => ({
+            label: grade,
+            data: situationFamilialeLabels.map(situation => dataBySituationFamiliale[situation][grade]),
+            backgroundColor: {
+                'Officier': 'rgba(11,41,236,0.6)',
+                'ODR': 'rgba(224,83,11,0.93)',
+                'MDR': 'rgba(32,35,37,0.53)'
+            }[grade],
+            borderColor: {
+                'Officier': 'rgba(11,41,236,0.6)',
+                'ODR': 'rgba(224,83,11,0.93)',
+                'MDR': 'rgba(32,35,37,0.53)'
+            }[grade],
+            borderWidth: 1
+        }));
+
+        // Création du graphique
+        const ctxFamily = document.getElementById('familySituationChart').getContext('2d');
+        new Chart(ctxFamily, {
+            type: 'bar',
+            data: {
+                labels: labelsWithTotals, // Utilise les labels avec totaux
+                datasets: familyDatasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Situation Familiale des Militaires'
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: false,
+                        title: {
+                            display: true,
+                            text: 'Situation Familiale'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre de Militaires'
+                        }
+                    }
+                }
+            }
+        });
+        /*]]>*/
+        //************************************** end chart 3 ******************************************
+        //************************************** Start Chart 4 ******************************************
+
+        /*<![CDATA[*/
+        const ageGroupGradeData = /*[[${ageGroupGradeData}]]*/ '[]';
+
+        // Extraire les labels des tranches d'âge et des grades
+        const ageGroupLabels = Array.from(new Set(ageGroupGradeData.map(item => item.ageGroup)));
+        const gradeLabels2 = Array.from(new Set(ageGroupGradeData.map(item => item.gradeCategorie)));
+
+        const dataByAgeGroup = {};
+        const totalByAgeGroup = {};
+
+        // Initialisation des données
+        ageGroupLabels.forEach(ageGroup => {
+            dataByAgeGroup[ageGroup] = {};
+            totalByAgeGroup[ageGroup] = 0; // Initialise le total à 0
+            gradeLabels2.forEach(grade => {
+                dataByAgeGroup[ageGroup][grade] = 0; // Initialise à 0
+            });
+        });
+
+        // Remplissage des données par tranche d'âge et grade
+        ageGroupGradeData.forEach(item => {
+            dataByAgeGroup[item.ageGroup][item.gradeCategorie] = item.nombreMilitaires;
+            totalByAgeGroup[item.ageGroup] += item.nombreMilitaires; // Calcul du total
+        });
+
+        // Mise à jour des labels pour inclure les totaux
+        const labelsWithTotals2 = ageGroupLabels.map(ageGroup =>
+            `Totale de la categorie ${ageGroup} : ${totalByAgeGroup[ageGroup]} `
+
+        );
+
+        // Préparation des datasets pour le graphique
+        const ageGroupDatasets = gradeLabels2.map(grade => ({
+            label: grade,
+            data: ageGroupLabels.map(ageGroup => dataByAgeGroup[ageGroup][grade]),
+            backgroundColor: {
+                'Officier': 'rgba(54, 162, 235, 0.6)',
+                'ODR': 'rgba(255, 159, 64, 0.6)',
+                'MDR': 'rgba(75, 192, 192, 0.6)'
+            }[grade],
+            borderColor: {
+                'Officier': 'rgba(54, 162, 235, 1)',
+                'ODR': 'rgba(255, 159, 64, 1)',
+                'MDR': 'rgba(75, 192, 192, 1)'
+            }[grade],
+            borderWidth: 1
+        }));
+
+        // Création du graphique
+        const ctxAgeGroup = document.getElementById('ageGroupGradeChart').getContext('2d');
+        new Chart(ctxAgeGroup, {
+            type: 'bar',
+            data: {
+                labels: labelsWithTotals2, // Utilise les labels avec totaux
+                datasets: ageGroupDatasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Distribution des Grades par Tranche d\'Âge'
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: false,
+                        title: {
+                            display: true,
+                            text: 'Tranche d\'Âge'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre de Militaires'
+                        }
+                    }
+                }
+            }
+        });
+        /*]]>*/
+        //************************************** End Chart 4 ******************************************
+
+
+        //************************************** begin chart 5 ******************************************
+
+        // Récupération des données depuis le modèle Thymeleaf
+        const diplomeCountByCategory = /*[[${diplomeCountByCategory}]]*/ {};
+
+        // Extract unique categories and diplomas from the data
+        const categories = Object.keys(diplomeCountByCategory);
+        const diplomeLabels = new Set(); // Using a Set to avoid duplicate entries
+        const datasets5 = [];
+
+        // Predefined colors for the datasets
+        const colors = [
+            '#FF6384', // Color 1
+            '#36A2EB', // Color 2
+            '#FFCE56', // Color 3
+            '#4BC0C0', // Color 4
+            '#FF9F40', // Color 5
+            '#C9CBCF'  // Color 6
+        ];
+
+        // Construction des labels pour les diplômes et des datasets
+        categories.forEach(category => {
+            const diplomeCounts = diplomeCountByCategory[category];
+            Object.keys(diplomeCounts).forEach(diplome => {
+                diplomeLabels.add(diplome); // Adding to a Set ensures uniqueness
+            });
+        });
+
+        // Convert Set to Array for further processing
+        const diplomeArray = Array.from(diplomeLabels);
+
+        diplomeArray.forEach((diplome, index) => {
+            const data = categories.map(category => {
+                return diplomeCountByCategory[category][diplome] || 0; // Default to 0 if undefined
+            });
+
+            datasets5.push({
+                label: diplome,
+                data: data,
+                backgroundColor: colors[index % colors.length], // Cycle through predefined colors
+                borderColor: colors[index % colors.length],     // Use same color for border
+                borderWidth: 1
+            });
+        });
+
+        // Configuration du graphique
+        const ctx5 = document.getElementById('diplomeChart').getContext('2d');
+        new Chart(ctx5, {
+            type: 'bar',
+            data: {
+                labels: categories,
+                datasets: datasets5
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Nombre de Diplômes par Catégorie de Grade'
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: false,
+                        beginAtZero: true,
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre de Militaires'
+                        }
+                    }
+                }
+            }
+        });
+
+        //************************************** end chart 5 ******************************************
+
+    </script>
+</body>
+</html>
