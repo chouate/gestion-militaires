@@ -228,11 +228,11 @@
                                 </a>
                             </li>
                             <li  class="nav-link  mr-3 ">
-                                <a class="logout btn btn-danger ml-2 d-flex align-items-center" title="Déconnexion">
-                                   <!--<i class="material-icons">exit_to_app</i>-->
-                                    <i class="fas fa-power-off"></i>
-                                    <!--<span style="font-size: 18px;">Déconnexion</span>-->
-                                </a>
+                                <form th:action="@{/logout}" method="post">
+                                    <button class="logout btn btn-danger ml-2 d-flex align-items-center" title="Déconnexion" type="submit" th:onclick="'return confirm(\'Voulez-vous vraiment vous déconnecter ?\')'">
+                                        <i class="fas fa-power-off"></i>
+                                    </button>
+                                </form>
                             </li>
 
                             <!--

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 100px auto;
+        }
+
+        .login-form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #333333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: #61df88;
+            outline: none;
+            box-shadow: 0 0 5px rgba(97, 223, 136, 0.5);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            background-color: #61df88;
+            color: white;
+        }
+
+        .btn:hover {
+            background-color: #5cbf76;
+        }
+
+        .alert {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .text-center {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .mb-3 {
+            margin-bottom: 25px;
+            margin-top: 15px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-form">
+            <h2 class="text-center mb-4">Connexion</h2>
+            <form th:action="@{/login}" method="post">
+                <div class="form-group mb-3">
+                    <label for="username" class="form-label">Username:</label>
+                    <input type="text" id="username" name="username" class="form-control" required />
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password" class="form-label">Mot de Passe:</label>
+                    <input type="password" id="password" name="password" class="form-control" required />
+                </div>
+                <div>
+                    <button class="btn" type="submit">Se Connecter</button>
+                </div>
+                <!-- Error message display -->
+                <div class="alert alert-danger mt-3" th:if="${param.error}">
+                    <p> Username ou mot de passe est invalid</p>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

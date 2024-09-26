@@ -62,40 +62,6 @@ public class GestionAcademieApplication {
 //			}
 
 
-//			LocalDate localDate = LocalDate.of(2023, 7, 29);
-//			Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-//			Militaire militaire = new Militaire();
-//			Bataillon bataillon = new Bataillon();
-//			bataillon.setNom("B.C.R");
-//			Companie companie = new Companie();
-//			companie.setNom("OCB");
-//			Grade grade = new Grade();
-//			grade.setNom("LT");
-//			grade.setCategorie("Officier");
-//
-//			militaire.setNom("mcharfi");
-//			militaire.setPrenom("mohemed");
-//			militaire.setDateNaissance(date);
-//			militaire.setFonction("fonction");
-//			militaire.setDiplome("diplome");
-//			militaire.setAdresse("adresse");
-//			militaire.setBMCA("VL");
-//			militaire.setLD(2);
-//			militaire.setPTC(2);
-//			militaire.setMatricule(3);
-//			militaire.setSituationFamiliale("célébataire(e)");
-//			militaire.setCompanie(companie);
-//			militaire.setBataillon(bataillon);
-//			militaire.setGrade(grade);
-//
-//			for(int i=0; i<10;i++){
-//				militaireRepository.save(militaire);
-//			}
-
-
-
-
-
 		};
 	}
 
