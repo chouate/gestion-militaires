@@ -70,13 +70,16 @@ public class MilitaireController {
 @GetMapping
 public String listMilitaires(Model model,
                              @RequestParam(name = "bataillon" ,required = false ) String bataillon,
-                             @RequestParam(name = "page", defaultValue = "0") int page,
+                             @RequestParam(name = "page", defaultValue = "1") int page,
                              @RequestParam(name = "size", defaultValue = "20") int size,
                              @RequestParam(name = "search", required = false) String search,
                              @RequestParam(name = "searchMatricule", required = false) String searchMatricule) {
     Page<Militaire> pagesMilitaire;
-    Pageable pageableSearching = PageRequest.of(page, 1000, Sort.by("grade.id").ascending());
-    Pageable pageable = PageRequest.of(page, size, Sort.by("grade.id").ascending());
+    // Subtract 1 from the page index to convert it to 0-based for PageRequest
+    int pageIndex = page - 1;
+
+    Pageable pageableSearching = PageRequest.of(pageIndex, 1000, Sort.by("grade.id").ascending());
+    Pageable pageable = PageRequest.of(pageIndex, size, Sort.by("grade.id").ascending());
     // Check if searching by matricule
     System.out.println("searchMatricule : "+searchMatricule);
     System.out.println("search : "+search);
@@ -100,8 +103,16 @@ public String listMilitaires(Model model,
         } else {
             System.out.println("sans recherche pour l'etat major ");
             pagesMilitaire = militaireService.findAll(pageable);
+            System.out.println("pagesMilitaire : "+pagesMilitaire.getTotalPages());
         }
     }
+
+    // Initialize pages array starting from 1 instead of 0
+//    int totalPages = pagesMilitaire.getTotalPages();
+//    int[] pages = new int[totalPages];
+//    for (int i = 0; i < totalPages; i++) {
+//        pages[i] = i + 1;  // Start from 1 instead of 0
+//    }
 
     model.addAttribute("bataillon",bataillon);
     model.addAttribute("totalPages", pagesMilitaire.getTotalPages());
@@ -115,7 +126,7 @@ public String listMilitaires(Model model,
 
 
     @GetMapping("/new")
-    public String showNewMilitaireForm(Model model,@RequestParam(value = "page",defaultValue = "0") int page) {
+    public String showNewMilitaireForm(Model model,@RequestParam(value = "page",defaultValue = "1") int page) {
         model.addAttribute("militaire", new Militaire());
         model.addAttribute("grades",gradeService.getAllGrades());
         model.addAttribute("bataillons",bataillonService.getAllBataillons());
@@ -134,7 +145,7 @@ public String listMilitaires(Model model,
     @PostMapping
     public String saveMilitaire(@Valid @ModelAttribute Militaire militaire,
                                 BindingResult bindingResult,Model model,
-                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "1") int page,
                                 @RequestParam("photo") MultipartFile file) {
 
 
@@ -211,7 +222,7 @@ public String listMilitaires(Model model,
     public String updateMilitaire(@PathVariable Long id, @Valid @ModelAttribute Militaire militaire,
                                   BindingResult bindingResult,
                                   Model model,
-                                  @RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "1") int page,
                                   @RequestParam("photo") MultipartFile file) {
         if (!file.isEmpty()) {
             try {
